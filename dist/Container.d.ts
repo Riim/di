@@ -4,5 +4,5 @@ export declare class Container {
     };
     constructor();
     register(key: string, service: any): this;
-    get<T>(constr: Function): T;
+    get<T>(constr: Function, args?: Array<any>): T;
 }

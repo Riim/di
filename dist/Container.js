@@ -8,22 +8,22 @@ var Container = /** @class */ (function () {
         this._serviceMap[key] = service;
         return this;
     };
-    Container.prototype.get = function (constr) {
-        var services = constr.inject;
-        if (!services) {
-            return new constr();
-        }
-        var serviceMap = this._serviceMap;
-        var args = new Array(services.length);
-        for (var i = 0, l = services.length; i < l; i++) {
-            var service = serviceMap[services[i]];
-            if (!service) {
-                throw new TypeError("Service \"" + service + "\" is not registered");
+    Container.prototype.get = function (constr, args) {
+        var keys = constr.inject;
+        var instances;
+        if (keys) {
+            var serviceMap = this._serviceMap;
+            instances = new Array(keys.length);
+            for (var i = 0, l = keys.length; i < l; i++) {
+                var service = serviceMap[keys[i]];
+                if (!service) {
+                    throw new TypeError("Service \"" + keys[i] + "\" is not registered");
+                }
+                instances[i] = (typeof service == 'function' ? this.get(service) : service);
             }
-            args[i] = (typeof service == 'function' ? this.get(service) : service);
         }
         var instance = Object.create(constr.prototype);
-        constr.apply(instance, args);
+        constr.apply(instance, instances && args ? instances.concat(args) : instances || args || []);
         return instance;
     };
     return Container;

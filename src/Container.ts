@@ -10,28 +10,28 @@ export class Container {
 		return this;
 	}
 
-	get<T>(constr: Function): T {
-		let services = (constr as any).inject;
+	get<T>(constr: Function, args?: Array<any>): T {
+		let keys = (constr as any).inject;
+		let instances: Array<object> | undefined;
 
-		if (!services) {
-			return new (constr as any)();
-		}
+		if (keys) {
+			let serviceMap = this._serviceMap;
 
-		let serviceMap = this._serviceMap;
-		let args = new Array(services.length);
+			instances = new Array(keys.length);
 
-		for (let i = 0, l = services.length; i < l; i++) {
-			let service = serviceMap[services[i]];
+			for (let i = 0, l = keys.length; i < l; i++) {
+				let service = serviceMap[keys[i]];
 
-			if (!service) {
-				throw new TypeError(`Service "${ service }" is not registered`);
+				if (!service) {
+					throw new TypeError(`Service "${ keys[i] }" is not registered`);
+				}
+
+				instances[i] = (typeof service == 'function' ? this.get(service) : service);
 			}
-
-			args[i] = (typeof service == 'function' ? this.get(service) : service);
 		}
 
 		let instance = Object.create(constr.prototype);
-		constr.apply(instance, args);
+		constr.apply(instance, instances && args ? instances.concat(args) : instances || args || []);
 		return instance;
 	}
 }
