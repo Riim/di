@@ -2,28 +2,28 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Container = /** @class */ (function () {
     function Container() {
-        this._serviceMap = Object.create(null);
+        this._services = Object.create(null);
     }
     Container.prototype.register = function (key, service) {
-        this._serviceMap[key] = service;
+        this._services[key] = service;
         return this;
     };
     Container.prototype.get = function (constr, args) {
         var keys = constr.inject;
-        var instances;
+        var inject;
         if (keys) {
-            var serviceMap = this._serviceMap;
-            instances = new Array(keys.length);
+            var services = this._services;
+            inject = new Array(keys.length);
             for (var i = 0, l = keys.length; i < l; i++) {
-                var service = serviceMap[keys[i]];
+                var service = services[keys[i]];
                 if (!service) {
                     throw new TypeError("Service \"" + keys[i] + "\" is not registered");
                 }
-                instances[i] = (typeof service == 'function' ? this.get(service) : service);
+                inject[i] = (typeof service == 'function' ? this.get(service) : service);
             }
         }
         var instance = Object.create(constr.prototype);
-        constr.apply(instance, instances && args ? instances.concat(args) : instances || args || []);
+        constr.apply(instance, inject && args ? inject.concat(args) : inject || args || []);
         return instance;
     };
     return Container;

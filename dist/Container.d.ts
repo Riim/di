@@ -1,8 +1,8 @@
 export declare class Container {
-    _serviceMap: {
+    _services: {
         [key: string]: any;
     };
     constructor();
     register(key: string, service: any): this;
-    get<T>(constr: Function, args?: Array<any>): T;
+    get<R>(constr: Function, args?: Array<any>): R;
 }
