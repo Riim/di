@@ -1,4 +1,4 @@
 import { Container } from './Container';
-import { injectDecorator } from './injectDecorator';
+import { InjectDecorator } from './InjectDecorator';
 declare let container: Container;
-export { Container, container, injectDecorator as inject };
+export { Container, container, InjectDecorator as Inject };
