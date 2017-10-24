@@ -1,21 +1,17 @@
 export class Container {
-	_services: { [key: string]: any };
+	static _services: { [key: string]: any } = Object.create(null);
 
-	constructor() {
-		this._services = Object.create(null);
+	static register(key: string, service: any): typeof Container {
+		Container._services[key] = service;
+		return Container;
 	}
 
-	register(key: string, service: any): this {
-		this._services[key] = service;
-		return this;
-	}
-
-	get<R>(constr: Function, args?: Array<any>): R {
+	static get<R>(constr: Function, args?: Array<any>): R {
 		let keys = (constr as any).inject;
 		let inject: Array<object> | undefined;
 
 		if (keys) {
-			let services = this._services;
+			let services = Container._services;
 
 			inject = new Array(keys.length);
 
@@ -23,10 +19,10 @@ export class Container {
 				let service = services[keys[i]];
 
 				if (!service) {
-					throw new TypeError(`Service "${ keys[i] }" is not registered`);
+					throw new TypeError(`Service "${keys[i]}" is not registered`);
 				}
 
-				inject[i] = (typeof service == 'function' ? this.get(service) : service);
+				inject[i] = typeof service == 'function' ? Container.get(service) : service;
 			}
 		}
 

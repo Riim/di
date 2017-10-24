@@ -1,8 +1,7 @@
 export declare class Container {
-    _services: {
+    static _services: {
         [key: string]: any;
     };
-    constructor();
-    register(key: string, service: any): this;
-    get<R>(constr: Function, args?: Array<any>): R;
+    static register(key: string, service: any): typeof Container;
+    static get<R>(constr: Function, args?: Array<any>): R;
 }
