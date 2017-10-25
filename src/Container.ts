@@ -1,7 +1,7 @@
 export class Container {
-	static _services: { [key: string]: Function } = Object.create(null);
+	static _services: { [key: string]: any } = Object.create(null);
 
-	static registerService(key: string, constr: Function): typeof Container {
+	static registerService(key: string, constr: any): typeof Container {
 		this._services[key] = constr;
 		return this;
 	}
@@ -18,7 +18,10 @@ export class Container {
 				throw new TypeError(`Service "${name}" is not registered`);
 			}
 
-			instance[name] = (service as any).instance || this.get(service);
+			instance[name] =
+				typeof service == 'function'
+					? (service as any).instance || this.get(service)
+					: service;
 		}
 
 		constr.apply(instance, args);

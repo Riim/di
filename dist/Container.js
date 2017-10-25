@@ -16,7 +16,10 @@ var Container = /** @class */ (function () {
             if (!service) {
                 throw new TypeError("Service \"" + name_1 + "\" is not registered");
             }
-            instance[name_1] = service.instance || this.get(service);
+            instance[name_1] =
+                typeof service == 'function'
+                    ? service.instance || this.get(service)
+                    : service;
         }
         constr.apply(instance, args);
         return instance;
