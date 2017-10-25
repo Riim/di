@@ -1,3 +1,4 @@
 import { Container } from './Container';
 import { InjectDecorator } from './InjectDecorator';
-export { Container, InjectDecorator as Inject };
+import { ServiceDecorator } from './ServiceDecorator';
+export { Container, ServiceDecorator as Service, InjectDecorator as Inject };

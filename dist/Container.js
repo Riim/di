@@ -3,27 +3,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Container = /** @class */ (function () {
     function Container() {
     }
-    Container.register = function (key, service) {
-        Container._services[key] = service;
-        return Container;
+    Container.registerService = function (key, constr) {
+        this._services[key] = constr;
+        return this;
     };
     Container.get = function (constr, args) {
-        var keys = constr.inject;
-        var inject;
-        if (keys) {
-            var services = Container._services;
-            inject = new Array(keys.length);
-            for (var i = 0, l = keys.length; i < l; i++) {
-                var service = services[keys[i]];
-                if (!service) {
-                    throw new TypeError("Service \"" + keys[i] + "\" is not registered");
-                }
-                inject[i] = typeof service == 'function' ? Container.get(service) : service;
-            }
-        }
+        var services = this._services;
         var instance = Object.create(constr.prototype);
-        constr.apply(instance, inject && args ? inject.concat(args) : inject || args || []);
+        var inject = constr.inject;
+        for (var name_1 in inject) {
+            var service = services[inject[name_1]];
+            if (!service) {
+                throw new TypeError("Service \"" + name_1 + "\" is not registered");
+            }
+            instance[name_1] = service.instance || this.get(service);
+        }
+        constr.apply(instance, args);
         return instance;
+    };
+    Container.reset = function () {
+        this._services = Object.create(null);
+        return this;
     };
     Container._services = Object.create(null);
     return Container;

@@ -1,33 +1,33 @@
 export class Container {
-	static _services: { [key: string]: any } = Object.create(null);
+	static _services: { [key: string]: Function } = Object.create(null);
 
-	static register(key: string, service: any): typeof Container {
-		Container._services[key] = service;
-		return Container;
+	static registerService(key: string, constr: Function): typeof Container {
+		this._services[key] = constr;
+		return this;
 	}
 
-	static get<R>(constr: Function, args?: Array<any>): R {
-		let keys = (constr as any).inject;
-		let inject: Array<object> | undefined;
+	static get<T>(constr: Function, args?: Array<any>): T {
+		let services = this._services;
+		let instance = Object.create(constr.prototype);
+		let inject = (constr as any).inject;
 
-		if (keys) {
-			let services = Container._services;
+		for (let name in inject) {
+			let service = services[inject[name]];
 
-			inject = new Array(keys.length);
-
-			for (let i = 0, l = keys.length; i < l; i++) {
-				let service = services[keys[i]];
-
-				if (!service) {
-					throw new TypeError(`Service "${keys[i]}" is not registered`);
-				}
-
-				inject[i] = typeof service == 'function' ? Container.get(service) : service;
+			if (!service) {
+				throw new TypeError(`Service "${name}" is not registered`);
 			}
+
+			instance[name] = (service as any).instance || this.get(service);
 		}
 
-		let instance = Object.create(constr.prototype);
-		constr.apply(instance, inject && args ? inject.concat(args) : inject || args || []);
+		constr.apply(instance, args);
+
 		return instance;
+	}
+
+	static reset(): typeof Container {
+		this._services = Object.create(null);
+		return this;
 	}
 }
