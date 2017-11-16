@@ -1,8 +1,8 @@
 export class Container {
 	static _services: { [key: string]: any } = Object.create(null);
 
-	static registerService(key: string, constr: any): typeof Container {
-		this._services[key] = constr;
+	static registerService(key: string, service: any): typeof Container {
+		this._services[key] = service;
 		return this;
 	}
 

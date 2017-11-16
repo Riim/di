@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Container = /** @class */ (function () {
     function Container() {
     }
-    Container.registerService = function (key, constr) {
-        this._services[key] = constr;
+    Container.registerService = function (key, service) {
+        this._services[key] = service;
         return this;
     };
     Container.get = function (constr, args) {
